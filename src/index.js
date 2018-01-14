@@ -13,30 +13,22 @@ let Button = (props) => {
     );
 };
 
-let MovieRowEditor = (props) => {
-  return (
-      <div></div>
-  );
-};
-
 let NewMovie = (props) => {
     let movieDraft = {title: ''};
     let handleChange = (event) => {
         movieDraft.title = event.target.value;
         event.preventDefault();
-
     };
     handleChange = handleChange.bind(this);
 
 
     return (
-
         [<label>
             Add Movie:
             <input type="text" onChange={handleChange} />
         </label>,
          <Button
-             handleClick={props.handlers.handleAddClick}
+             handleClick={props.handleClick}
              label="Add"
              movie={movieDraft}
          />]
@@ -45,15 +37,65 @@ let NewMovie = (props) => {
 
 let MovieRow = (props) => {
     let movie = props.movie;
-    return (
+    let editable = movie.editable;
+    let favorite = movie.favorite;
+    let handleChange = (event) => {
+        movie.title = event.target.value;
+        console.log(event.target);
+        event.preventDefault();
+    };
+    handleChange = handleChange.bind(this);
+
+    let editMovie =  () => (
         <li key={movie.id} className="MovieRow">
-            {movie.title}
+            <label>
+                <input
+                    type="text"
+                    placeholder={movie.title}
+                    onChange={handleChange}
+                />
+            </label>
             <Button
-                handleClick={props.handlers.handleFavClick}
-                label="*"
+                handleClick={props.handlers.handleSaveClick}
+                label="save"
+                movie={movie}
+            />
+            <Button
+                handleClick={props.handlers.handleDeleteClick}
+                label="delete"
                 movie={movie}
             />
         </li>
+    );
+
+    let staticMovie = () => (
+        <li key={movie.id} className="MovieRow">
+            {movie.title}
+
+            {favorite ?
+                <Button
+                handleClick={props.handlers.handleFavClick}
+                label="*"
+                movie={movie}
+                /> :
+                <Button
+                    handleClick={props.handlers.handleFavClick}
+                    label="-"
+                    movie={movie}
+                />}
+
+            <Button
+                handleClick={props.handlers.handleEditClick}
+                label="edit"
+                movie={movie}
+            />
+        </li>
+    );
+
+    return (
+        <div>
+            {editable ? editMovie() : staticMovie()}
+        </div>
     );
 };
 
@@ -70,7 +112,7 @@ let MovieList = (props) => {
     );
 };
 
-class Container extends React.Component {
+class App extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -82,15 +124,14 @@ class Container extends React.Component {
 
     handleFavClick(movie) {
         console.log(movie);
-        let movies = this.state.movies.map((movie) => movie);
-        let index = movies.indexOf(movie);
-        movies.splice(index, 1, movie);
-        this.setState({movies: movies})
+        movie.favorite = !movie.favorite;
+        this.updateMovieState(movie);
     }
 
     handleAddClick(movie) {
         let movies = this.state.movies.map((movie) => movie);
         movie.id = this.state.count;
+        movie.editable = false;
         movie.favorite = false;
         movies.push(movie);
         this.setState(
@@ -101,28 +142,47 @@ class Container extends React.Component {
         );
     }
 
-    handleSaveClick(movie) {
-
+    handleEditClick(movie) {
+        this.toggleEditableState(movie);
     };
 
-    handleDeleteClick() {
+    handleSaveClick(movie) {
+        this.toggleEditableState(movie);
+    };
 
+    handleDeleteClick(movie) {
+        let movies = this.state.movies.map((movie) => movie);
+        let index = movies.indexOf(movie);
+        movies.splice(index, 1);
+        this.setState({movies: movies});
+    }
+
+    updateMovieState (movie) {
+        let movies = this.state.movies.map((movie) => movie);
+        let index = movies.indexOf(movie);
+        movies.splice(index, 1, movie);
+        this.setState({movies: movies});
+    }
+
+    toggleEditableState(movie){
+        movie.editable = !movie.editable;
+        this.updateMovieState(movie);
     }
 
     render() {
 
         let handlers = {
             handleFavClick: this.handleFavClick.bind(this),
-            handleAddClick: this.handleAddClick.bind(this),
             handleSaveClick: this.handleSaveClick.bind(this),
-            handleDeleteClick: this.handleDeleteClick.bind(this)
+            handleDeleteClick: this.handleDeleteClick.bind(this),
+            handleEditClick: this.handleEditClick.bind(this)
         };
         return (
 
             [<MovieList
                 movies = {this.state.movies}
                 handlers = {handlers}
-            />, <NewMovie handlers = {handlers}/>]
+            />, <NewMovie handleClick = {this.handleAddClick.bind(this)}/>]
 
         );
     }
@@ -131,6 +191,6 @@ class Container extends React.Component {
 // ========================================
 
 ReactDOM.render(
-    <Container />,
+    <App />,
     document.getElementById('root')
 );
