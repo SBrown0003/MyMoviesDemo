@@ -1,17 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.css';
+import { Button, ListGroup, ListGroupItem } from 'reactstrap';
 import './index.css';
 
-let Button = (props) => {
-    return (
-        <button
-            className="btn btn-default"
-            onClick={(e) => props.handleClick(props.movie, e)}
-        >
-            {props.label}
-        </button>
-    );
-};
+// let Button = (props) => {
+//     return (
+//         <button
+//             className="btn btn-default"
+//             onClick={(e) => props.handleClick(props.movie, e)}
+//         >
+//             {props.label}
+//         </button>
+//     );
+// };
 
 let NewMovie = (props) => {
     const addMovieText = React.createElement('h2', {}, 'Add Movie');
@@ -20,20 +22,25 @@ let NewMovie = (props) => {
         movieDraft.title = event.target.value;
         event.preventDefault();
     };
+    let handleClick = () => {
+        props.handleClick(movieDraft);
+    };
+    handleClick = handleClick.bind(this);
+
+    let handleBlur = (event) => event.target.value = '';
+    handleBlur = handleBlur.bind(this);
     handleChange = handleChange.bind(this);
 
     return (
         <div>
             {addMovieText}
             <label>
-                <input type="text" onChange={handleChange} />
+                <input type="text" onChange={handleChange} onBlur={handleBlur}/>
             </label>
 
-             <Button
-                 handleClick={props.handleClick}
-                 label="Add"
-                 movie={movieDraft}
-             />
+             <Button onClick={(e) => props.handleClick(movieDraft, e)} color ="primary">
+                 Add
+             </Button>
         </div>
     );
 };
@@ -47,27 +54,26 @@ let MovieRow = (props) => {
         movie.title = value ? value : movie.title;
         event.preventDefault();
     };
+    //
+    // let handleBlur = (event) => {
+    //     event.target.value = movie.title;
+    //     return props.handlers.handleEditBlur;
+    // };
+    // handleBlur = handleBlur.bind(this);
     handleChange = handleChange.bind(this);
 
-    let editMovie =  () => (
+    let editMovie = () => (
         <div>
             <label>
                 <input
                     type="text"
                     placeholder={movie.title}
                     onChange={handleChange}
+                    // onBlur={}
                 />
             </label>
-            <Button
-                handleClick={props.handlers.handleSaveClick}
-                label="save"
-                movie={movie}
-            />
-            <Button
-                handleClick={props.handlers.handleDeleteClick}
-                label="delete"
-                movie={movie}
-            />
+            <Button onClick={(e) => props.handlers.handleSaveClick(movie, e)}>save</Button>
+            <Button onClick={(e) => props.handlers.handleDeleteClick(movie,e)}> delete </Button>
         </div>
     );
 
@@ -76,46 +82,36 @@ let MovieRow = (props) => {
             {movie.title}
 
             {favorite ?
-                <Button
-                handleClick={props.handlers.handleFavClick}
-                label="*"
-                movie={movie}
-                />
+                <Button onClick={(e) => props.handlers.handleFavClick(movie, e)}>*</Button>
                 :
-                <Button
-                    handleClick={props.handlers.handleFavClick}
-                    label="-"
-                    movie={movie}
-                />}
+                <Button onClick={(e) => props.handlers.handleFavClick(movie, e)}>-</Button>
+            }
 
-            <Button
-                handleClick={props.handlers.handleEditClick}
-                label="edit"
-                movie={movie}
-            />
+            <Button onClick={(e) => props.handlers.handleEditClick(movie, e)}>edit</Button>
         </div>
     );
 
     return (
-        <li key={props.id} className="MovieRow">
-            {editable ? editMovie() : staticMovie()}
-        </li>
+        <div>{editable ? editMovie() : staticMovie()}</div>
     );
 };
 
 let MovieList = (props) => {
+
     return (
-        <ul>
+        <ListGroup>
             {props.movies.map((movie) =>
+                <ListGroupItem key = {movie.id}>
+
                 <MovieRow
-                    movie = {movie}
-                    handlers = {props.handlers}
-                    id = {movie.id}
+                movie={movie}
+                handlers={props.handlers}
+                id={movie.id}
                 />
+                </ListGroupItem>
             )}
-        </ul>
-    );
-};
+        </ListGroup>
+    )};
 
 class App extends React.Component {
     constructor(props){
@@ -148,6 +144,9 @@ class App extends React.Component {
                 movies: movies
             }
         );
+    }
+    handleEditBlur(movie) {
+        this.toggleEditableState(movie);
     }
 
     handleEditClick(movie) {
@@ -184,7 +183,8 @@ class App extends React.Component {
             handleFavClick: this.handleFavClick.bind(this),
             handleSaveClick: this.handleSaveClick.bind(this),
             handleDeleteClick: this.handleDeleteClick.bind(this),
-            handleEditClick: this.handleEditClick.bind(this)
+            handleEditClick: this.handleEditClick.bind(this),
+            handleEditBlur: this.handleEditBlur.bind(this)
         };
         return (
             <div>
