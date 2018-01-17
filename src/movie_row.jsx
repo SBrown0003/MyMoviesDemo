@@ -30,16 +30,20 @@ class MovieRow extends React.Component {
         handleChange = handleChange.bind(this);
 
         return (
-            <div>
-                <label>
-                    <input
-                        type="text"
-                        placeholder={movie.title}
-                        onChange={handleChange}
-                    />
-                </label>
-                <Button onClick={(e) => this.handleSaveClick(movie, e)}>save</Button>
-                <Button onClick={(e) => this.props.handlers.handleDeleteClick(movie,e)}> delete </Button>
+            <div className="row">
+                <div className="col-3">
+                    <label>
+                        <input
+                            type="text"
+                            placeholder={movie.title}
+                            onChange={handleChange}
+                        />
+                    </label>
+                </div>
+                <div className="col">
+                    <Button onClick={(e) => this.handleSaveClick(movie, e)}>save</Button>
+                    <Button onClick={(e) => this.props.handlers.handleDeleteClick(movie,e)}> delete </Button>
+                </div>
             </div>
         );
     };
@@ -47,22 +51,21 @@ class MovieRow extends React.Component {
     staticMovie = (movie) => {
         let favorite = movie.favorite;
         let title = movie.title;
+        let starClassName = favorite ? "fa fa-star fa-lg" : "fa fa-star-o fa-lg";
 
         return (
-            <div>
-                {title}
-                <a onClick={(e) => this.handleEditClick(movie, e)}>
-                    <i className="fas fa-pencil-alt"/></a>
+            <div className="row">
+                <div className="col-3"> {title} </div>
 
-                {favorite ?
-                    <a onClick={(e) => this.props.handlers.handleFavClick(movie, e)}>
-                        <i className="fas fa-star fa-2x"/>
+                <div className="col">
+                    <a onClick={(e) => this.handleEditClick(movie, e)}>
+                        <i className="fa fa-pencil fa-lg" aria-hidden="true"></i>
                     </a>
-                    :
+
                     <a onClick={(e) => this.props.handlers.handleFavClick(movie, e)}>
-                        <i className="far fa-star"/>
+                        <i className={starClassName}/>
                     </a>
-                }
+                </div>
             </div>
         );
     };
@@ -70,7 +73,6 @@ class MovieRow extends React.Component {
     render() {
         let movie = this.state.movie;
         let editable = this.state.editable;
-
         return (
             <div>{editable ? this.editStateMovie(movie) : this.staticMovie(movie)}</div>
         );

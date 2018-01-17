@@ -8,7 +8,7 @@ let MovieList = (props) => {
     return (
         <ListGroup>
             {props.movies.map((movie) =>
-                <ListGroupItem key = {movie.id}>
+                <ListGroupItem key = {movie.id} className="row">
                     <MovieRow
                         movie={movie}
                         handlers={props.handlers}

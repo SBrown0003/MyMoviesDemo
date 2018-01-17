@@ -14,7 +14,6 @@ class App extends React.Component {
     }
 
     handleFavClick(movie) {
-        console.log(movie);
         movie.favorite = !movie.favorite;
         this.updateMovieState(movie);
     }
@@ -37,13 +36,6 @@ class App extends React.Component {
             }
         );
     }
-    handleEditBlur(movie) {
-        this.toggleEditableState(movie);
-    }
-
-    handleEditClick(movie) {
-        this.toggleEditableState(movie);
-    };
 
     handleSaveClick(movie) {
         this.updateMovieState(movie);
@@ -63,31 +55,28 @@ class App extends React.Component {
         this.setState({movies: movies});
     }
 
-    toggleEditableState(movie){
-        movie.editable = !movie.editable;
-        this.updateMovieState(movie);
-    }
-
     render() {
         const title = React.createElement('h1', {}, 'My Movies');
 
         let handlers = {
             handleFavClick: this.handleFavClick.bind(this),
             handleSaveClick: this.handleSaveClick.bind(this),
-            handleDeleteClick: this.handleDeleteClick.bind(this),
-            handleEditClick: this.handleEditClick.bind(this),
-            handleEditBlur: this.handleEditBlur.bind(this)
+            handleDeleteClick: this.handleDeleteClick.bind(this)
         };
         return (
-            <div>
+            <div className = "app container">
                 {title}
                 <MovieList
                     movies = {this.state.movies}
                     handlers = {handlers}
                 />
-                <NewMovie handleClick = {this.handleAddClick.bind(this)}/>
-            </div>
 
+                <hr/>
+
+                <div className="row">
+                    <NewMovie handleClick = {this.handleAddClick.bind(this)}/>
+                </div>
+            </div>
         );
     }
 }

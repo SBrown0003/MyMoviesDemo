@@ -1,7 +1,5 @@
 import React from 'react';
-import { Alert, Input } from 'reactstrap';
-import 'bootstrap/dist/css/bootstrap.css';
-
+import { Alert, Input, Button, ListGroup, ListGroupItem } from 'reactstrap';
 
 class NewMovie extends React.Component {
     constructor(props){
@@ -44,15 +42,20 @@ class NewMovie extends React.Component {
         handleChange = handleChange.bind(this);
 
         return (
-            <div>
+            <div className="col new-movie-row">
                 {addMovieText}
-                <label>
-                    <Input type="text" value={this.state.movieTextValue} onChange={handleChange}/>
-                </label>
+                <ListGroup>
+                    <ListGroupItem>
+                        <label>
+                            <Input type="text" value={this.state.movieTextValue} onChange={handleChange}/>
+                        </label>
 
-                <a onClick={(e) => this.handleAdd(this.state.movieDraft, e)}>
-                    <i className="far fa-plus-square fa-2x"></i>
-                </a>
+                        <Button onClick={(e) => this.handleAdd(this.state.movieDraft, e)}>
+                            Add
+                        </Button>
+                    </ListGroupItem>
+                </ListGroup>
+
                 {showEmptyError ?
                     <Alert color="danger">
                         Title cannot be blank.
